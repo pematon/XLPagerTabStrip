@@ -233,9 +233,11 @@ open class PagerTabStripViewController: UIViewController, UIScrollViewDelegate {
     }
 
     open func updateContent() {
-        if lastSize.width != containerView.bounds.size.width {
+        guard lastSize.width == containerView.bounds.size.width else {
             lastSize = containerView.bounds.size
+            // Settings contentOffset calls scrollViewDidScroll which calls updateContent again.
             containerView.contentOffset = CGPoint(x: pageOffsetForChild(at: currentIndex), y: 0)
+            return
         }
         lastSize = containerView.bounds.size
 
