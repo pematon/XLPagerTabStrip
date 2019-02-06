@@ -113,6 +113,10 @@ open class PagerTabStripViewController: UIViewController, UIScrollViewDelegate {
 
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        if !didCallViewWillAppearOnce {
+            updateContent()
+            didCallViewWillAppearOnce = true
+        }
         isViewAppearing = true
         children.forEach { $0.beginAppearanceTransition(true, animated: animated) }
     }
@@ -149,7 +153,11 @@ open class PagerTabStripViewController: UIViewController, UIScrollViewDelegate {
     }
 
     open func moveToViewController(at index: Int, animated: Bool = true) {
-        guard isViewLoaded && view.window != nil && currentIndex != index else {
+        guard isViewLoaded && !viewControllers.isEmpty && view.window != nil else {
+            // currentIndex and preCurrentIndex are compared in viewDidAppear
+            // If they differ, animated moveToViewController is called.
+            // For pre-viewDidLoad setup, we need to make sure the indices are same.
+            currentIndex = index
             preCurrentIndex = index
             return
         }
@@ -229,9 +237,11 @@ open class PagerTabStripViewController: UIViewController, UIScrollViewDelegate {
     }
 
     open func updateContent() {
-        if lastSize.width != containerView.bounds.size.width {
+        guard lastSize.width == containerView.bounds.size.width else {
             lastSize = containerView.bounds.size
+            // Settings contentOffset calls scrollViewDidScroll which calls updateContent again.
             containerView.contentOffset = CGPoint(x: pageOffsetForChild(at: currentIndex), y: 0)
+            return
         }
         lastSize = containerView.bounds.size
 
@@ -392,5 +402,6 @@ open class PagerTabStripViewController: UIViewController, UIScrollViewDelegate {
     private var lastSize = CGSize(width: 0, height: 0)
     internal var isViewRotating = false
     internal var isViewAppearing = false
+    private var didCallViewWillAppearOnce = false
 
 }
