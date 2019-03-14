@@ -176,8 +176,10 @@ open class PagerTabStripViewController: UIViewController, UIScrollViewDelegate {
             (navigationController?.view ?? view).isUserInteractionEnabled = !animated
             containerView.setContentOffset(CGPoint(x: pageOffsetForChild(at: index), y: 0), animated: true)
         } else {
+            let newPageOffset = CGPoint(x: pageOffsetForChild(at: index), y: 0)
+            guard containerView.contentOffset != newPageOffset else { return }
             (navigationController?.view ?? view).isUserInteractionEnabled = !animated
-            containerView.setContentOffset(CGPoint(x: pageOffsetForChild(at: index), y: 0), animated: animated)
+            containerView.setContentOffset(newPageOffset, animated: animated)
         }
     }
 
