@@ -153,7 +153,7 @@ open class PagerTabStripViewController: UIViewController, UIScrollViewDelegate {
     }
 
     open func moveToViewController(at index: Int, animated: Bool = true) {
-        guard isViewLoaded && !viewControllers.isEmpty && view.window != nil else {
+        guard isViewLoaded && !viewControllers.isEmpty else {
             // currentIndex and preCurrentIndex are compared in viewDidAppear
             // If they differ, animated moveToViewController is called.
             // For pre-viewDidLoad setup, we need to make sure the indices are same.
@@ -162,6 +162,7 @@ open class PagerTabStripViewController: UIViewController, UIScrollViewDelegate {
             return
         }
 
+        let animated = view.window != nil && animated
         if animated && pagerBehaviour.skipIntermediateViewControllers && abs(currentIndex - index) > 1 {
             var tmpViewControllers = viewControllers
             let currentChildVC = viewControllers[currentIndex]
