@@ -56,7 +56,7 @@ open class BarPagerTabStripViewController: PagerTabStripViewController, PagerTab
 
     open override func viewDidLoad() {
         super.viewDidLoad()
-        barView = barView ?? {
+        let barViewAux = barView ?? {
             let barView = BarView(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: settings.style.barHeight))
             barView.autoresizingMask = .flexibleWidth
             barView.backgroundColor = .black
@@ -64,15 +64,18 @@ open class BarPagerTabStripViewController: PagerTabStripViewController, PagerTab
             return barView
         }()
 
+        barView = barViewAux
+
+        if barView.superview == nil {
+            view.addSubview(barView)
+        }
+
         barView.backgroundColor = settings.style.barBackgroundColor ?? barView.backgroundColor
         barView.selectedBar.backgroundColor = settings.style.selectedBarBackgroundColor ?? barView.selectedBar.backgroundColor
     }
 
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if barView.superview == nil {
-            view.addSubview(barView)
-        }
         barView.optionsCount = viewControllers.count
         barView.moveTo(index: currentIndex, animated: false)
     }
